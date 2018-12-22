@@ -4,15 +4,26 @@ export class SimpleDrawer {
   private _canvas: HTMLCanvasElement;
   private _renderer: Render;
   private viewTranslation = {x:0, y:0};
+  private _background;
+  private _viewHeight = 100;
+  private _viewWidth = 100;
+  private _worldHeight = 100;
+  private _worldWidth = 100;
+  private _showAll = false;
 
-  constructor(private engine: Engine) {
+  constructor(
+    private engine: Engine,
+    options: any = {}
+  ) {
+    this._background = options.background || 'transparent'
+    this._showAll  = options.showAll
     this.init();
+
   }
 
   init() {
     this._canvas = this._createCanvas();
     this._createMatterRenderer();
-    this.updateBounds();
     this.handlePageScroll = this.handlePageScroll.bind(this);
     window.addEventListener('mousewheel', this.handlePageScroll);
   }
@@ -30,17 +41,31 @@ export class SimpleDrawer {
     this._canvas.style.width = viewWidth + 'px';
     this._canvas.style.height = viewHeight + 'px';
 
-    const { bounds } = this._renderer;
+    this._worldWidth = worldWidth;
+    this._worldHeight = worldHeight;
+    this._viewWidth = viewWidth;
+    this._viewHeight = viewHeight;
 
-    const padding = 200;
-    bounds.min.x = -padding;
-    bounds.min.y = -padding;
-    bounds.max.x = bounds.min.x + worldWidth + padding * 2;
-    bounds.max.y = bounds.min.y + worldHeight + padding * 2;
+    this.updateBounds();
   }
 
   updateBounds() {
-    // Bounds.shift(this._renderer.bounds, this.viewTranslation);
+    const { bounds } = this._renderer;
+    if(this._showAll) {
+      const padding = 200;
+      bounds.min.x = -padding;
+      bounds.min.y = -padding;
+      bounds.max.x = bounds.min.x + this._worldWidth + padding * 2;
+      bounds.max.y = bounds.min.y + this._worldHeight + padding * 2;
+    }else {
+
+      bounds.min.x = 0;
+      bounds.min.y = 0;
+      bounds.max.x = bounds.min.x + this._viewWidth;
+      bounds.max.y = bounds.min.y + this._viewHeight;
+
+      Bounds.shift(this._renderer.bounds, this.viewTranslation);
+    }
   }
 
   run() {
@@ -60,8 +85,9 @@ export class SimpleDrawer {
     const canvas = document.createElement('canvas');
     canvas.style.cssText = `
       position: fixed;
-      top: 0;
-      left: 0;
+      bottom: 0;
+      right: 0;
+      pointer-events: none;
     `;
 
 
@@ -72,8 +98,8 @@ export class SimpleDrawer {
     this._renderer = Render.create(<any>{
       canvas: this._canvas,
       options: {
-        wireframeBackground: 'yellow',
-        background: 'red',
+        wireframeBackground: this._background,
+        background: 'transparent',
         width: window.innerWidth,
         height: window.innerHeight,
         hasBounds: true,
