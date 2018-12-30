@@ -68,13 +68,8 @@ export class SimpleDrawer {
     }
   }
 
-  run() {
-    const loop = () => {
-      Render.world(this._renderer);
-      requestAnimationFrame(loop);
-    }
-
-    loop();
+  draw() {
+    Render.world(this._renderer);
   }
 
   get element() {
@@ -85,8 +80,8 @@ export class SimpleDrawer {
     const canvas = document.createElement('canvas');
     canvas.style.cssText = `
       position: fixed;
-      bottom: 0;
-      right: 0;
+      top: 0;
+      left: 0;
       pointer-events: none;
     `;
 
@@ -100,8 +95,8 @@ export class SimpleDrawer {
       options: {
         wireframeBackground: this._background,
         background: 'transparent',
-        width: window.innerWidth,
-        height: window.innerHeight,
+        width: 100,
+        height: 100,
         hasBounds: true,
         showAngleIndicator: true
       }
