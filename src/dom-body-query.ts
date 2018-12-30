@@ -1,35 +1,26 @@
 import { Constraint, Body, Composite, Bodies } from 'matter-js';
 import { DomBody } from './dom-body';
+import { Rect } from './rect';
 
 const globalGroup = Body.nextGroup();
-
-
-
-function untransformedPosition(element) {
-  let offsetTop = 0;
-  let el = this._ele
-  while (el) {
-    offsetTop += el.offsetTop;
-    el = el.offsetParent;
-  }
-  return offsetTop - window.pageYOffset;
-}
 
 export class DOMBodyQuery {
   constructor() {
   }
 
   getNodes(){
-    return document.querySelectorAll('.probe123');
+    return document.querySelectorAll('.probe1234');
   }
 
   find() {
     console.log('find bodies');
     const nodes = Array.from(this.getNodes());
 
-    const bodies = nodes.map(node => {
+    let bodies = nodes.map(node => {
       return this.getBody(node as HTMLElement);
     });
+
+    bodies = bodies.filter(body => body !== null);
 
     return bodies;
   }
@@ -48,19 +39,126 @@ export class DOMBodyQuery {
     };
   }
 
-  getBody(element) {
+  getInlineBlockRect(element) {
+    // remove any transformation — but: layout thrashing :/
+    element.style.transform = '';
 
-    let rect = this.getBlockRect(element)
-    console.log(rect)
+    const range = document.createRange();
+    range.selectNode(element);
+    const rect = range.getClientRects()[0];
+
+    let rect2 = new Rect(rect);
+    // rect2.width = rect2.width/2;
+    rect2 = rect2.center();
+    return rect2
+  }
+
+
+  getMultiRect(element) {
+    const range = document.createRange();
+    let baseRect = Rect.from(element.getBoundingClientRect());
+    range.selectNode(element);
+
+    let rects = Array.from(range.getClientRects())
+      .map(rect => Rect.from(rect))
+      .filter(rect => !baseRect.equal(rect))
+      .map(rect => rect.center());
+
+    return rects;
+  }
+
+  rectToBody(rect) {
     const body = Bodies.rectangle(rect.x, rect.y, rect.width, rect.height, {
       isStatic: false
     });
 
-    const domBody = new DomBody(element, body);
-    domBody.setSize(rect.width, rect.height);
-
-    return domBody
+    return body;
   }
+
+  getBody(element) {
+    const displayStyle = window.getComputedStyle(element).getPropertyValue('display');
+    console.log({displayStyle, element, tag: element.tagName})
+
+    if(displayStyle === 'inline' && element.tagName !== 'IMG') {
+      return null;
+    }
+
+    if(displayStyle === 'block') {
+      const allRects = this.getMultiRect(element);
+      const rect = this.getInlineBlockRect(element)
+
+      // const compoundBodies = allRects.map(r => this.rectToBody(r));
+
+      // const body = Body.create({
+      //   isStatic: false,
+      //   parts: [...compoundBodies]
+      // });
+
+      // console.log(body.position)
+
+      const body = Bodies.rectangle(rect.x, rect.y, rect.width, rect.height, {
+        isStatic: false
+      })
+
+
+      //   // parts: [...compoundBodies]
+      // });
+
+      const domBody = new DomBody(element, body);
+      domBody.setSize(560, 55);
+      return domBody
+
+    } else {
+      let rect = this.getBlockRect(element)
+      const body = this.rectToBody(rect);
+
+      const domBody = new DomBody(element, body);
+      domBody.setSize(rect.width, rect.height);
+      return domBody
+    }
+  }
+
+  _normalizeRect({x, y, width, height}) {
+    let rect = {
+      x, y, width, height
+    }
+
+    rect.x += rect.width/2;
+    rect.y += rect.height/2;
+
+    // global space
+    rect.y += window.pageYOffset;
+    return rect;
+  }
+  _getInlineRect(element) {
+    var text = element.childNodes[0];
+
+    var range = document.createRange();
+    range.selectNode(text);
+    var rect = range.getBoundingClientRect() as any;
+
+    range.detach(); // frees up memory in older browsers
+
+    return rect;
+  }
+
+  // getCompoundBody(element) {
+  //   const range = document.createRange();
+  //   const group = Body.nextGroup();
+  //   range.selectNode(element);
+
+  //   let rects = Array.from(range.getClientRects());
+
+  //   const compoundBody = Body.create({
+  //     parts: [partC, partD, partE, partF]
+  //   });
+
+  //     // .map(r => this._normalizeRect(r as any));
+  //   console.log('rects', rects, element.getClientRects())
+  //   const composite = this.getCompositeFromRects(rects, group);
+
+  //   return compoundBody;
+  // }
 
   // getCompositeFromRects(rects, group) {
   //   const composite = Composite.create();
@@ -75,32 +173,6 @@ export class DOMBodyQuery {
   //   return composite;
   // }
 
-  _normalizeRect({x, y, width, height}) {
-    let rect = {
-      x, y, width, height
-    }
-
-    rect.x += rect.width/2;
-    rect.y += rect.height/2;
-
-    // global space
-    rect.y += window.pageYOffset;
-    return rect;
-  }
-
-  // getAssembledBodyComposite(element) {
-  //   const range = document.createRange();
-  //   const group = Body.nextGroup();
-  //   range.selectNode(element);
-  //   range.collapse(false);
-
-  //   let rects = Array.from(range.getClientRects())
-  //     .map(r => this._normalizeRect(r as any));
-  //   console.log('rects', rects)
-  //   const composite = this.getCompositeFromRects(rects, group);
-
-  //   return composite;
-  // }
 
   // getBody(element: HTMLElement) {
   //   const range = document.createRange();
@@ -277,16 +349,16 @@ export class DOMBodyQuery {
   //   return rect;
   // }
 
-  _getBlockRect(element) {
-    const rect: any = element.getBoundingClientRect();
+  // _getBlockRect(element) {
+  //   const rect: any = element.getBoundingClientRect();
 
-    rect.x += rect.width/2;
-    rect.y += rect.height/2;
+  //   rect.x += rect.width/2;
+  //   rect.y += rect.height/2;
 
-    // to global coordinate space
-    rect.y + window.pageYOffset;
-    return rect;
-  }
+  //   // to global coordinate space
+  //   rect.y + window.pageYOffset;
+  //   return rect;
+  // }
 
   // getBody(node, mode) {
   //   let rect;
@@ -321,18 +393,7 @@ export class DOMBodyQuery {
   //   return body;
   // }
 
-  // _getInlineRect(element) {
-  //   var text = element.childNodes[0];
 
-  //   var range = document.createRange();
-  //   range.selectNode(text);
-  //   var rect = range.getBoundingClientRect() as any;
-  //   rect.y = rect.y + window.pageYOffset;
-
-  //   range.detach(); // frees up memory in older browsers
-
-  //   return rect;
-  // }
 
   // _getBlockRect(element) {
   //   const rect: any = element.getBoundingClientRect();

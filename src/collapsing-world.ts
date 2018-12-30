@@ -36,7 +36,7 @@ export class CollapsingWorld {
 
   create() {
     document.body.appendChild(this._debugRender.element);
-    this.findElements();
+    // this.findElements();
   }
 
   addBodies(domBodies: DomBody[]) {
@@ -124,28 +124,32 @@ export class CollapsingWorld {
 
   findElements() {
     const bodies = pageQuery.find();
-    this.addBodies(bodies)
+    this.addBodies(bodies);
     bodies.forEach(domBody => {
+      this.pinToWorld(domBody)
+    });
+  }
 
+  pinToWorld(domBody) {
     const worldPosition = domBody.realPosition;
     const localPosition = {
       x: -domBody.width/2,
-      y: -domBody.height/2,
+      // x: -10,
+      y: 0,
     }
 
     const constraint = Constraint.create({
-        pointA: worldPosition,
-        pointB: localPosition,
-        bodyB: domBody.body,
-        length: 0,
-        stiffness: 0.001,
-        render: {
-            strokeStyle: '#90EE90',
-            lineWidth: 3
-        }
-      });
-      World.addConstraint(this.world, constraint);
+      pointA: worldPosition,
+      pointB: localPosition,
+      bodyB: domBody.body,
+      stiffness: 0.7,
+      render: {
+          strokeStyle: '#90EE90',
+          lineWidth: 3
+      }
     });
+    World.addConstraint(this.world, constraint);
+
   }
 
   addMouse() {

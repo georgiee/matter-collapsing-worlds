@@ -58,7 +58,6 @@ export class DomBody {
 
     mat2d.translate(matrix, matrix, posVector);
     mat2d.rotate(matrix, matrix, this.body.angle);
-    // console.log(this.body.angle);
 
     transform(this.element, matrix);
   }
