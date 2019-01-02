@@ -54,4 +54,14 @@ export class Rectangle {
       y, y + height
     );
   }
+
+  static subtract(rect: Rectangle, subrect: Rectangle): any {
+    const newRect = new Rectangle(
+      rect.left - subrect.left,
+      rect.right - subrect.right,
+      rect.top - subrect.top,
+      rect.bottom - subrect.bottom
+    )
+    return newRect;
+  }
 }

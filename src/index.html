@@ -10,6 +10,10 @@
   <link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
 
   <style>
+    body, html {
+      min-height: 100vh;
+    }
+
     body {
       margin: 0;
     }
@@ -31,7 +35,10 @@
     .is-physical {
       user-select: none;
       pointer-events: none;
-      outline: 1px dotted hotpink;
+      /* outline: 1px dotted hotpink; */
+    }
+    p{
+      margin-bottom: 0;
     }
 
   </style>
@@ -39,6 +46,23 @@
 </head>
 <body>
   <div class="collapsing-container">
+    <h1 class="probe-c1">Collapsing DOM Worlds</h1>
+    <h1 class="probe-c2">Collapsing DOM Worlds</h1>
+    <p>
+      1. Click on any element to create a physical object.<br>
+      2. Press shift to pin it with a rope.<br>
+      3. Click & Hold while pressing ctrl to create random physics object without a DOM element attached<br>
+
+      Other notes:<br>
+      Resets when resized.<br>
+      Block Elements with a single text node (like a headline)
+      are converted to body with the bounding box of the text node only.
+      If there are multiple nodes (em, strong, a) inside a block elements together with text
+      the usual bounding client rect is used — I plan to merge all node rects in such a combined
+      dom node to get a more realistic shape.
+      <br>
+
+    </p>
       <div class="inline-elements">
         <a>hellop</a>
         <button class="probe123">hello</button>
@@ -48,7 +72,7 @@
         <img class="probe123" src="https://picsum.photos/200/200?image=178"/>
         <img class="probe123" src="https://picsum.photos/300/130?image=179"/>
       </div>
-      <h1 class="probe1234">hello <span>you</span> and <a>me</a></h1>
+      <h1 class="probe12345">hello <span>you</span> and <a>me</a></h1>
       <p class="probeB1">
         It’s been quite a long year. Aside from all of the various world events that have happened, there’s also been a lot of... stuff released. And we’ve reviewed almost all of it. New phones, tablets, laptops, smartwatches, cars, gaming PCs... you name it, we’ve probably reviewed it.<span>ok</span>
         It’s been quite a long year. Aside from all of the various world events that have happened, there’s also been a lot of... stuff released. And we’ve reviewed almost all of it. New phones, tablets, laptops, smartwatches, cars, gaming PCs... you name it, we’ve probably reviewed it.
@@ -102,7 +126,6 @@
       <p>
           Faced with all that, who wouldn’t rather throw himself into a fight — maybe even shut down parts of the government — over a border wall? At least with his wall, Mr. Trump gets to pretend that he is still in control, even as his administration sinks further and further into the swamp.
       </p>
-
   </div>
 </body>
 </html>

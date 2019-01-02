@@ -18,15 +18,15 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
+"@types/gl-matrix@^2.4.4":
+  version "2.4.4"
+  resolved "https://registry.yarnpkg.com/@types/gl-matrix/-/gl-matrix-2.4.4.tgz#e9d06dc5552102eb6ced7beb78ceb3290b229959"
+  integrity sha512-HyI/bS+CxFiewhtpuwUP9VftvPyImQulBuI9+VEUa5NnGILsuokliq2fFp9DqZsJHbGWxk/VOLwHaXb4vIkKBw==
+
 "@types/jest@^23.3.8":
   version "23.3.10"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-23.3.10.tgz#4897974cc317bf99d4fe6af1efa15957fa9c94de"
   integrity sha512-DC8xTuW/6TYgvEg3HEXS7cu9OijFqprVDXXiOcdOKZCU/5PJNLZU37VVvmZHdtMiGOa8wAA/We+JzbdxFzQTRQ==
-
-"@types/matter-js@^0.10.2":
-  version "0.10.2"
-  resolved "https://registry.yarnpkg.com/@types/matter-js/-/matter-js-0.10.2.tgz#49c20c23316637538c860f6d2e3d4d89b20a6551"
-  integrity sha512-7zg46Fx+nPIZ+WlK0Xud8L2IKk9BsilA7hgw+60o75/hM0fnx5MgufCpNPQB+69N+0WFirX5fhoHdmYdzkwdGw==
 
 "@webassemblyjs/ast@1.7.11":
   version "1.7.11"

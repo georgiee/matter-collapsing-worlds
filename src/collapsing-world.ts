@@ -2,7 +2,7 @@ import { fromEvent } from 'rxjs';
 import { tap, map, filter, mergeMap } from 'rxjs/operators';
 import { mouseToElement$, resizeWindow$ } from './util';
 import { SimpleDrawer } from './simple-drawer';
-import { Engine, World, Bodies, Constraint } from 'matter-js';
+import { Common, Engine, World, Bodies, Constraint, Composites } from 'matter-js';
 import { DOMBody } from './dom-body';
 import { Offset } from './core/helper';
 
@@ -24,9 +24,12 @@ export class CollapsingWorld {
     this.init();
   }
 
+  setGravity(value) {
+    this._engine.world.gravity.y = value;
+  }
+
   init() {
     this._engine = Engine.create();
-    this._engine.world.gravity.y = 1;
 
     this._render = new SimpleDrawer(this._engine);
     document.body.appendChild(this._render.element);
@@ -73,7 +76,6 @@ export class CollapsingWorld {
    */
   pinToWorld(domBody: DOMBody, offset: Offset = null) {
     const worldPosition = domBody.realPosition;
-
     if(!offset) {
       offset = {
         x: 0,
@@ -92,7 +94,40 @@ export class CollapsingWorld {
           lineWidth: 3
       }
     });
+
     World.addConstraint(this.world, constraint);
+  }
+
+  addJunk(x, y) {
+     // add bodies
+     const size = 0.5;
+     var stack = Composites.stack(x, y, 2, 2, 0, 0, function(x, y) {
+     var sides = Math.round(Common.random(1, 8));
+
+      // triangles can be a little unstable, so avoid until fixed
+      sides = (sides === 3) ? 4 : sides;
+
+      // round the edges of some bodies
+      var chamfer = null;
+      if (sides > 2 && Common.random() > 0.7) {
+          chamfer = {
+              radius: 10
+          };
+      }
+
+      switch (Math.round(Common.random(0, 1))) {
+        case 0:
+            if (Common.random() < 0.8) {
+                return Bodies.rectangle(x, y, Common.random(25, 50)*size, Common.random(25, 50)*size, { chamfer: chamfer });
+            } else {
+                return Bodies.rectangle(x, y, Common.random(80, 120)*size, Common.random(25, 30)*size, { chamfer: chamfer });
+            }
+        case 1:
+            return Bodies.polygon(x, y, sides, Common.random(25, 50)*size, { chamfer: chamfer });
+        }
+    });
+
+    this._addToWorld(stack);
   }
 
   _resize() {
@@ -118,23 +153,28 @@ export class CollapsingWorld {
       World.remove(this.world, this._walls as any);
     }
 
-    const padding = 50;
-    const wallSize = 20;
+    const wallSize = 100;
     const width = this._worldSize.width
     const height = this._worldSize.height;
 
     const rect = {
-      x: -wallSize/2 - padding,
-      y: -wallSize/2 - padding,
-      width: width + wallSize + padding*2,
-      height: height + wallSize + padding*2,
+      x: -wallSize/2,
+      y: 0,
+      width: width + wallSize,
+      height: height + wallSize,
       thickness: wallSize
     }
 
     this._walls = [
-      Bodies.rectangle(rect.x, rect.y + rect.height/2, rect.thickness, rect.height, { isStatic: true, label: 'Wall (left)' }),
-      Bodies.rectangle(rect.x + rect.width/2, rect.y + rect.height, rect.width, rect.thickness, { isStatic: true, label: 'Wall (bottom)'  }),
-      Bodies.rectangle(rect.x + rect.width, rect.y + rect.height/2, rect.thickness, rect.height, { isStatic: true, label: 'Wall (right)'  }),
+      Bodies.rectangle(rect.x, rect.y + rect.height/2, rect.thickness, rect.height, {
+        isStatic: true, label: 'Wall (left)'
+      }),
+      Bodies.rectangle(rect.x + rect.width, rect.y + rect.height/2, rect.thickness, rect.height, {
+        isStatic: true, label: 'Wall (right)'
+      }),
+      Bodies.rectangle(rect.x + rect.width/2, rect.y + rect.height - 100, rect.width, rect.thickness, {
+        isStatic: true, label: 'Wall (bottom)'
+      })
     ];
 
     this._addToWorld(this._walls);

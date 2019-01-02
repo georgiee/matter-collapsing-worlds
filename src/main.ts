@@ -22,6 +22,6 @@ import { WorldBuilder } from './builder';
  * C)
  */
 window.addEventListener('load', () => {
-  const builder = new WorldBuilder(document.body);
+  const builder = new WorldBuilder(document.querySelector('.collapsing-container'));
   builder.start();
 });
