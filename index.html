@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+
+  <link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
+
+  <style>
+    body, html {
+      min-height: 100vh;
+    }
+
+    body {
+      margin: 0;
+    }
+    img {
+      max-width: 100%;
+    }
+    span {
+      display: inline-block;
+    }
+
+    img.is-block {
+      display: block;
+    }
+    .collapsing-container {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .is-physical {
+      user-select: none;
+      pointer-events: none;
+      /* outline: 1px dotted hotpink; */
+    }
+    p{
+      margin-bottom: 0;
+    }
+
+  </style>
+  <title>Document</title>
+</head>
+<body>
+  <div class="collapsing-container">
+    <h1 class="probe-c1">Collapsing DOM Worlds</h1>
+    <p>
+        <ul>
+          <li>1. Click on any element to create a physical object.</li>
+          <li>2. Press shift to pin it with a rope.</li>
+          <li>3. Click & Hold while pressing ctrl to create random physics object without a DOM element attached</li>
+        </ul>
+      <br>
+
+      <h2>Other notes:</h2>
+
+      <li>
+        the whole demonstration only relies on applying CSS transformationsn to the elements <span>👌</span> There are no
+        additional nodes being created at any given time.
+      </li>
+      <li>Click me to drop me <span>🐙</span></li>
+      <li>Resets when resize</li>
+      <li>
+          Block Elements with a single text node (like a headline or this list element)
+          are converted to body with the bounding box of the text node only.
+          If there are multiple nodes (em, strong, a) or a text occupying multiple lines inside a block elements together with text the usual bounding client rect is used — I plan to merge all node rects in such a combineddom node to get a more realistic shape.
+      </li>
+      <li>
+        inline elements can't receive any transform so I convert them to inline blocks
+        in favor of inserting additional dom elements.
+      </li>
+
+      <br>
+      <a>I'm a link</a>
+    </p>
+      <div class="inline-elements">
+
+        <button>hello</button>
+        <button>hello</button>
+        <span >Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsa quidem mollitia doloribus doloremque officiis, repudiandae voluptate perspiciatis, maxime sapiente a omnis dolore adipisci iure quaerat dignissimos aut. Sed, perferendis harum?</span>
+        <img src="https://picsum.photos/200/200?image=178"/>
+        <img src="https://picsum.photos/300/130?image=179"/>
+      </div>
+      <h1 class="probe12345">hello <span>you</span> and <a>me</a></h1>
+      <p class="probeB1">
+        It’s been quite a long year. Aside from all of the various world events that have happened, there’s also been a lot of... stuff released. And we’ve reviewed almost all of it. New phones, tablets, laptops, smartwatches, cars, gaming PCs... you name it, we’ve probably reviewed it.<span>ok</span>
+        It’s been quite a long year. Aside from all of the various world events that have happened, there’s also been a lot of... stuff released. And we’ve reviewed almost all of it. New phones, tablets, laptops, smartwatches, cars, gaming PCs... you name it, we’ve probably reviewed it.
+      </p>
+      <img src="https://picsum.photos/300/300?image=19"/>
+
+      <p data-physics="disabled" >
+        It’s beviewed it.
+        It’s been quite a long year <span>😍</span>. Aside from all of the various world events that have happened, there’s also been a lot of... stuff released. of it. New phones, <span>😈</span> tablets, laptops, smartwatches, cars, gaming PCs... you name it, we’ve probably reviewed it <span>😅</span> Aside from all of the various world events that have happened, there’s also been a lot of... stuff released. of it. New phones, <span>😈</span>
+      </p>
+      <button data-physics="disabled" class="js-all-characters">Convert words to net</button>
+      <div class="probeC">
+        <p>abc</p>
+      </div>
+
+      <span class="probeA">
+        ents that have happened, there’s also been a lot of... stuff released. And we’ve reviewed almost all of it. New phones, tablets, laptops, smartwatches, cars, gaming PCs... you name it, we’ve probably reviewed it.
+
+
+        ents that have happened, there’s also been a lot of... stuff released. And we’ve reviewed almost all of it. New phones, tablets, laptops, smartwatches, cars, gaming PCs... you name it, we’ve probably reviewed it.
+      </span>
+
+      <h1 class="probeA">favorite <span>gadgets</span> of 2018</h1>
+
+      <div class="probe">
+        <p>
+          So for our end of the year round up, we decided to forego the traditional categorical rankings and instead tell you about our favorite gadgets of the year. These aren’t the best gadgets, these are our favorites. Enjoy!
+        </p>
+        <h3>More Headlines to save them</h3>
+        <p class="probe2">
+            There’s no doubt that Mr. Trump was upset about conservatives trashing him for <a href='https://www.nytimes.com/'>flirting</a> with a wall-free spending bill. This president is <span>driven</span> by an <em>insatiable need for adulation</em>. The less popular he becomes with the bulk of the nation, the more vital it is for him — <strong>emotionally</strong> and politically — to keep his base happy.
+        </p>
+        <svg width="100" height="100">
+          <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+
+        <button class="button button-outline">No!</button>
+        <!-- <img src="https://picsum.photos/g/600/300?image=177"/> -->
+      </div>
+
+      <blockquote>
+        <p><em>That quote rocks!</em></p>
+      </blockquote>
+
+      <button class="button button-outline">Yes</button>
+      <button class="button button-outline">No!</button>
+
+
+      <!-- <img src="https://picsum.photos/g/600/300?image=977"/> -->
+      <h2>Shutdown? More Like a Breakdown</h2>
+      <p>
+          But it’s also true that revving up the wall fight allows Mr. Trump to divert attention from so much of the other drama threatening to swallow him up.
+      <!-- <img src="https://picsum.photos/g/700/300?image=577"/> -->
+      <p>
+          Faced with all that, who wouldn’t rather throw himself into a fight — maybe even shut down parts of the government — over a border wall? At least with his wall, Mr. Trump gets to pretend that he is still in control, even as his administration sinks further and further into the swamp.
+      </p>
+  </div>
+<script type="text/javascript" src="main.js"></script></body>
+</html>
