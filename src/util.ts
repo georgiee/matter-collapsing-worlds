@@ -54,6 +54,11 @@ export const mouseToElement$ = rootElement =>
     filter(({element}) => {
       return element.namespaceURI.indexOf('svg') === -1
     }),
+    // ignore excluded by data
+    filter(({element}) => {
+      return !(element.dataset.physics === 'disabled')
+    }),
+
     // ignore html elements like html, body and a given root element
     filter(({element}) => {
       const partOfRoot = rootElement.contains(element) && rootElement !== element

@@ -53,9 +53,10 @@ export class CollapsingWorld {
     this._resize();
   }
 
-  add(domBody: DOMBody) {
-    this._domBodies.push(domBody);
-    this._addToWorld(domBody.body);
+  add(...domBodies: DOMBody[]) {
+    this._domBodies.push(...domBodies);
+    domBodies.forEach(b => this.addToWorld(b.body));
+
   }
 
   setWorldSize(width, height) {
@@ -127,7 +128,7 @@ export class CollapsingWorld {
         }
     });
 
-    this._addToWorld(stack);
+    this.addToWorld(stack);
   }
 
   _resize() {
@@ -159,7 +160,7 @@ export class CollapsingWorld {
 
     const rect = {
       x: -wallSize/2,
-      y: 0,
+      y: -wallSize/2,
       width: width + wallSize,
       height: height + wallSize,
       thickness: wallSize
@@ -172,15 +173,15 @@ export class CollapsingWorld {
       Bodies.rectangle(rect.x + rect.width, rect.y + rect.height/2, rect.thickness, rect.height, {
         isStatic: true, label: 'Wall (right)'
       }),
-      Bodies.rectangle(rect.x + rect.width/2, rect.y + rect.height - 100, rect.width, rect.thickness, {
+      Bodies.rectangle(rect.x + rect.width/2, rect.y + rect.height, rect.width, rect.thickness, {
         isStatic: true, label: 'Wall (bottom)'
       })
     ];
 
-    this._addToWorld(this._walls);
+    this.addToWorld(this._walls);
   }
 
-  _addToWorld(object) {
+  addToWorld(object) {
     World.add(this._engine.world, object);
   }
 

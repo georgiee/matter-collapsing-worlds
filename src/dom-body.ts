@@ -150,7 +150,6 @@ export class DOMBody {
     element,
     overrideElementBase = null
     }){
-    console.log('overrideElementBase', overrideElementBase);
 
     if(DOMBody.anyChildEnabled(element)) {
       console.error(`Can't convert element ${element} it has children already converted to dom body`);
@@ -170,8 +169,6 @@ export class DOMBody {
 
     const domElement = new DOMBodyCandidate(overrideElementBase || element);
     const domBody = domElement.createBody();
-
-    // domBody.setTransformCenter(145.875/2, 1/2);
 
     return domBody
   }
@@ -193,8 +190,7 @@ export class DOMBody {
 
 class DOMBodyCandidate {
   private _nodes: Node[];
-  private _isPartial = false;
-  private _partialOffset: Rectangle;
+  private _transformOffset: Rectangle;
 
   constructor(
     private _element: HTMLElement
@@ -219,6 +215,7 @@ class DOMBodyCandidate {
     const body = Bodies.rectangle(rect.x, rect.y, rect.width, rect.height, {
       // collisionFilter: { group: ignoreAllCollisionsGroup}
     });
+    body.render.visible = false;
     return body;
   }
 
@@ -235,8 +232,8 @@ class DOMBodyCandidate {
     const body = this._createMatterBody(shallow);
     const domBody = new DOMBody(this._element, body);
 
-    if(this._isPartial) {
-      domBody.setTransformCenter(this._partialOffset.width/2, this._partialOffset.height/2);
+    if(this._transformOffset) {
+      domBody.setTransformCenter(this._transformOffset.width, this._transformOffset.height);
     }
 
     return domBody;
@@ -256,12 +253,14 @@ class DOMBodyCandidate {
       const rect = Rectangle.from(this._element.getBoundingClientRect());
       const body = this.rectToBody(rect);
       body.label = 'main'
-
       // Body.setParts(body, [subBody]);
       // Body.setStatic(body, true);
-      this._isPartial= true;
-      this._partialOffset = Rectangle.subtract(rect, subrect);
-      console.log(this._partialOffset)
+
+      // calculate the offset from the top left of the element (rect)
+      // compared with the partial text node we extracted.
+      // we need that value to fix the transformation offset as it's being applied
+      // to the overall element — we can't apply it to the text node.
+      this._transformOffset = new Rectangle(subrect.left, rect.left, subrect.top, rect.top)
       return subBody;
 
     }else {

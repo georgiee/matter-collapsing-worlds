@@ -24,4 +24,9 @@ import { WorldBuilder } from './builder';
 window.addEventListener('load', () => {
   const builder = new WorldBuilder(document.querySelector('.collapsing-container'));
   builder.start();
+
+  const btn = document.querySelector('.js-all-characters');
+  btn.addEventListener('click', () => {
+    builder.isolateCharacters(btn.previousElementSibling as HTMLElement)
+  })
 });
