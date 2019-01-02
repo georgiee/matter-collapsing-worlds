@@ -1,79 +1,64 @@
-import { Render, Engine, Bounds } from 'matter-js';
+import { Engine, Render, Bounds } from 'matter-js';
+import { Size } from './collapsing-world';
+import { fromEvent } from 'rxjs';
+import { map, mapTo, auditTime } from 'rxjs/operators';
+import { scrollOffset$ } from './util';
 
 export class SimpleDrawer {
   private _canvas: HTMLCanvasElement;
   private _renderer: Render;
-  private viewTranslation = {x:0, y:0};
-  private _background;
-  private _viewHeight = 100;
-  private _viewWidth = 100;
-  private _worldHeight = 100;
-  private _worldWidth = 100;
-  private _showAll = false;
+  private _viewportSize: Size;
+  private _worldSize: Size;
+  private _viewTranslation = {x:0, y:0};
 
   constructor(
-    private engine: Engine,
-    options: any = {}
+    private _engine: Engine
   ) {
-    this._background = options.background || 'transparent'
-    this._showAll  = options.showAll
-    this.init();
+    this._createCanvas();
+    this._createRenderer();
 
+    scrollOffset$.subscribe(pageYOffset => this._handlePageScroll(pageYOffset));
   }
 
-  init() {
-    this._canvas = this._createCanvas();
-    this._createMatterRenderer();
-    this.handlePageScroll = this.handlePageScroll.bind(this);
-    window.addEventListener('mousewheel', this.handlePageScroll);
-  }
+  resize(worldSize, viewportSize) {
+    this._worldSize = {...worldSize};
+    this._viewportSize = {...viewportSize};
 
-  handlePageScroll() {
-    this.viewTranslation.y = window.pageYOffset;
-    this.updateBounds();
-  }
-
-  resize({ viewWidth, viewHeight, worldWidth, worldHeight}) {
-    this._renderer.options.width = viewWidth;
-    this._renderer.options.height = viewHeight;
-    this._canvas.width = viewWidth;
-    this._canvas.height = viewHeight;
-    this._canvas.style.width = viewWidth + 'px';
-    this._canvas.style.height = viewHeight + 'px';
-
-    this._worldWidth = worldWidth;
-    this._worldHeight = worldHeight;
-    this._viewWidth = viewWidth;
-    this._viewHeight = viewHeight;
-
-    this.updateBounds();
-  }
-
-  updateBounds() {
-    const { bounds } = this._renderer;
-    if(this._showAll) {
-      const padding = 200;
-      bounds.min.x = -padding;
-      bounds.min.y = -padding;
-      bounds.max.x = bounds.min.x + this._worldWidth + padding * 2;
-      bounds.max.y = bounds.min.y + this._worldHeight + padding * 2;
-    }else {
-
-      bounds.min.x = 0;
-      bounds.min.y = 0;
-      bounds.max.x = bounds.min.x + this._viewWidth;
-      bounds.max.y = bounds.min.y + this._viewHeight;
-
-      Bounds.shift(this._renderer.bounds, this.viewTranslation);
-    }
+    this._updateCanvas();
+    this._updateRenderer();
   }
 
   draw() {
     Render.world(this._renderer);
   }
 
-  get element() {
-    return this._canvas;
+  _handlePageScroll(pageYOffset) {
+    this._translateView(pageYOffset);
+  }
+
+  _updateCanvas() {
+    // resize the canvas we draw in
+    this._canvas.width = this._viewportSize.width;
+    this._canvas.height = this._viewportSize.height;
+    this._canvas.style.width = this._viewportSize.width + 'px';
+    this._canvas.style.height = this._viewportSize.height + 'px';
+  }
+
+  _updateRenderer() {
+    this._renderer.options.width = this._viewportSize.width;
+    this._renderer.options.height = this._viewportSize.height;
+    this._translateView(this._viewTranslation.y);
+  }
+
+  _translateView(pageYOffset) {
+    this._viewTranslation.y = pageYOffset;
+    const bounds = this._renderer.bounds as any;
+
+    bounds.min.x = 0;
+    bounds.min.y = 0;
+    bounds.max.x = bounds.min.x + this._viewportSize.width;
+    bounds.max.y = bounds.min.y + this._viewportSize.height;
+    Bounds.shift(this._renderer.bounds, this._viewTranslation);
   }
 
   _createCanvas() {
@@ -84,16 +69,15 @@ export class SimpleDrawer {
       left: 0;
       pointer-events: none;
     `;
-
-
-    return canvas;
+    this._canvas = canvas;
   }
 
-  _createMatterRenderer() {
+  _createRenderer() {
     this._renderer = Render.create(<any>{
       canvas: this._canvas,
+      engine: this._engine,
       options: {
-        wireframeBackground: this._background,
+        wireframeBackground: 'transparent',
         background: 'transparent',
         width: 100,
         height: 100,
@@ -101,7 +85,9 @@ export class SimpleDrawer {
         showAngleIndicator: true
       }
     });
+  }
 
-    this._renderer.engine = this.engine;
+  get element() {
+    return this._canvas;
   }
 }

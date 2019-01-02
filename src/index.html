@@ -16,11 +16,14 @@
     img {
       max-width: 100%;
     }
+    span {
+      display: inline-block;
+    }
 
     img.is-block {
       display: block;
     }
-    .container {
+    .collapsing-container {
       max-width: 600px;
       margin: auto;
     }
@@ -28,24 +31,25 @@
     .is-physical {
       user-select: none;
       pointer-events: none;
+      outline: 1px dotted hotpink;
     }
 
   </style>
   <title>Document</title>
 </head>
 <body>
-  <div class="container">
+  <div class="collapsing-container">
       <div class="inline-elements">
         <a>hellop</a>
         <button class="probe123">hello</button>
         <button class="probe123">hello</button>
         <span class="probe123" >Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ipsa quidem mollitia doloribus doloremque officiis, repudiandae voluptate perspiciatis, maxime sapiente a omnis dolore adipisci iure quaerat dignissimos aut. Sed, perferendis harum?</span>
-        <!-- <img class="probe123" src="https://picsum.photos/g/60/30?image=177"/> -->
-        <!-- <img class="probe123" src="https://picsum.photos/200/200?image=178"/> -->
-        <!-- <img class="probe123" src="https://picsum.photos/300/130?image=179"/> -->
+        <img class="probe123" src="https://picsum.photos/g/60/30?image=177"/>
+        <img class="probe123" src="https://picsum.photos/200/200?image=178"/>
+        <img class="probe123" src="https://picsum.photos/300/130?image=179"/>
       </div>
       <h1 class="probe1234">hello <span>you</span> and <a>me</a></h1>
-      <p class="probeB">
+      <p class="probeB1">
         It’s been quite a long year. Aside from all of the various world events that have happened, there’s also been a lot of... stuff released. And we’ve reviewed almost all of it. New phones, tablets, laptops, smartwatches, cars, gaming PCs... you name it, we’ve probably reviewed it.<span>ok</span>
         It’s been quite a long year. Aside from all of the various world events that have happened, there’s also been a lot of... stuff released. And we’ve reviewed almost all of it. New phones, tablets, laptops, smartwatches, cars, gaming PCs... you name it, we’ve probably reviewed it.
         It’s been quite a long year. Aside from all of the various world events that have happened, there’s also been a lot of... stuff released. And we’ve reviewed almost all of it. New phones, tablets, laptops, smartwatches, cars, gaming PCs... you name it, we’ve probably reviewed it.
